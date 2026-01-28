@@ -1,0 +1,60 @@
+services:
+  mongo:
+    image: mongo:7.0
+    container_name: hypesoft-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.4
+    container_name: hypesoft-keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTP_ENABLED: "true"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./docker/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: hypesoft-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      Mongo__ConnectionString: mongodb://mongo:27017
+      Mongo__DatabaseName: hypesoft
+      Keycloak__Authority: http://keycloak:8080/realms/hypesoft
+      Keycloak__Audience: hypesoft-api
+      Keycloak__RequireHttpsMetadata: "false"
+      Cors__Origins__0: http://localhost:3000
+      Cors__Origins__1: http://localhost:5173
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongo
+      - keycloak
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_URL: /
+        VITE_KEYCLOAK_URL: http://localhost:8080
+        VITE_KEYCLOAK_REALM: hypesoft
+        VITE_KEYCLOAK_CLIENT_ID: hypesoft-frontend
+    container_name: hypesoft-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
