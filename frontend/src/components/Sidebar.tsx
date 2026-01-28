@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom'
 const navItems = {
   general: [
     { label: 'Dashboard', to: '/' },
-    { label: 'Estatísticas', to: '/' },
   ],
   shop: [
     { label: 'Produtos', to: '/produtos' },
@@ -34,7 +33,7 @@ export function Sidebar() {
           <div className="mt-3 flex flex-col gap-2">
             {navItems.general.map((item) => (
               <NavLink
-                key={item.to}
+                key={item.label}
                 to={item.to}
                 className={({ isActive }) =>
                   `rounded-xl px-4 py-2 text-sm font-medium transition ${

@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { getDashboard } from '../services/dashboard'
 import { StatCard } from '../components/StatCard'
@@ -14,11 +15,26 @@ import {
 
 export function DashboardPage() {
   const { isAuthenticated } = useAuth()
+  const [selectedCategory, setSelectedCategory] = useState('')
   const { data, isLoading, isError } = useQuery({
     queryKey: ['dashboard'],
     queryFn: getDashboard,
     enabled: isAuthenticated,
   })
+
+  const chartData = useMemo(() => {
+    if (!data) {
+      return []
+    }
+
+    if (!selectedCategory) {
+      return data.productsByCategory
+    }
+
+    return data.productsByCategory.filter(
+      (item) => item.categoryName === selectedCategory
+    )
+  }, [data, selectedCategory])
 
   if (isError) {
     return <div className="text-rose-400">Não foi possível carregar o dashboard.</div>
@@ -58,13 +74,22 @@ export function DashboardPage() {
               <h2 className="text-lg font-semibold text-slate-900">Produtos por categoria</h2>
               <p className="text-sm text-slate-500">Visão geral do catálogo</p>
             </div>
-            <button className="rounded-full border border-slate-200 px-3 py-1 text-xs text-slate-500">
-              Filtrar
-            </button>
+            <select
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
+              className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-600"
+            >
+              <option value="">Todas</option>
+              {data.productsByCategory.map((item) => (
+                <option key={item.categoryName} value={item.categoryName}>
+                  {item.categoryName}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="mt-6 h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.productsByCategory} margin={{ left: 0, right: 16 }}>
+              <BarChart data={chartData} margin={{ left: 0, right: 16 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="categoryName" stroke="#94a3b8" fontSize={12} />
                 <YAxis stroke="#94a3b8" fontSize={12} allowDecimals={false} />

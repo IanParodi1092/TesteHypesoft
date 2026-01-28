@@ -55,7 +55,7 @@ public sealed class GetDashboardQueryHandler : IRequestHandler<GetDashboardQuery
             {
                 CategoryId = group.Key,
                 CategoryName = categoryLookup.TryGetValue(group.Key, out var name) ? name : "Sem categoria",
-                Count = group.Count()
+                Count = group.Sum(product => product.Quantity)
             })
             .OrderByDescending(x => x.Count)
             .ToList();

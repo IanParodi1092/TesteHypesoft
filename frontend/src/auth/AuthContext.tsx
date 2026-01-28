@@ -14,6 +14,7 @@ type AuthContextValue = {
   isReady: boolean
   error?: string
   token?: string
+  userName?: string
   login: () => void
   logout: () => void
 }
@@ -23,6 +24,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [token, setToken] = useState<string | undefined>()
+  const [userName, setUserName] = useState<string | undefined>()
   const [isReady, setIsReady] = useState(false)
   const [error, setError] = useState<string | undefined>()
   const hasInitialized = useRef(false)
@@ -66,6 +68,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .then((authenticated) => {
         setIsAuthenticated(authenticated)
         setToken(keycloak.token)
+        setUserName(
+          (keycloak.tokenParsed?.preferred_username as string | undefined) ??
+            (keycloak.tokenParsed?.name as string | undefined)
+        )
         setIsReady(true)
       })
       .catch((initError) => {
@@ -83,6 +89,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .then((refreshed) => {
           if (refreshed) {
             setToken(keycloak.token)
+            setUserName(
+              (keycloak.tokenParsed?.preferred_username as string | undefined) ??
+                (keycloak.tokenParsed?.name as string | undefined)
+            )
           }
         })
         .catch(() => {
@@ -119,10 +129,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isReady,
       error,
       token,
+      userName,
       login,
       logout,
     }),
-    [isAuthenticated, isReady, error, token, login, logout]
+    [isAuthenticated, isReady, error, token, userName, login, logout]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
