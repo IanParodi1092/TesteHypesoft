@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Hypesoft.API/Hypesoft.API.csproj" />
+    <Project Path="src/Hypesoft.Application/Hypesoft.Application.csproj" />
+    <Project Path="src/Hypesoft.Domain/Hypesoft.Domain.csproj" />
+    <Project Path="src/Hypesoft.Infrastructure/Hypesoft.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Hypesoft.Api.IntegrationTests/Hypesoft.Api.IntegrationTests.csproj" />
+    <Project Path="tests/Hypesoft.Tests/Hypesoft.Tests.csproj" />
+  </Folder>
+</Solution>
