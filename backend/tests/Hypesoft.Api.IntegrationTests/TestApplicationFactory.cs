@@ -22,9 +22,9 @@ public sealed class TestApplicationFactory : WebApplicationFactory<Program>
         {
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = TestAuthHandler.Scheme;
-                options.DefaultChallengeScheme = TestAuthHandler.Scheme;
-            }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.Scheme, _ => { });
+                options.DefaultAuthenticateScheme = TestAuthHandler.SchemeName;
+                options.DefaultChallengeScheme = TestAuthHandler.SchemeName;
+            }).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.SchemeName, _ => { });
 
             services.AddSingleton<IProductRepository>(new InMemoryProductRepository());
             services.AddSingleton<ICategoryRepository>(new InMemoryCategoryRepository());
@@ -34,8 +34,9 @@ public sealed class TestApplicationFactory : WebApplicationFactory<Program>
 
 public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public const string Scheme = "Test";
+    public const string SchemeName = "Test";
 
+#pragma warning disable CS0618
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
@@ -44,6 +45,7 @@ public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationScheme
         : base(options, logger, encoder, clock)
     {
     }
+#pragma warning restore CS0618
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -53,9 +55,9 @@ public sealed class TestAuthHandler : AuthenticationHandler<AuthenticationScheme
             new Claim(ClaimTypes.Name, "test-user"),
             new Claim(ClaimTypes.Role, "Admin")
         };
-        var identity = new ClaimsIdentity(claims, Scheme);
+        var identity = new ClaimsIdentity(claims, SchemeName);
         var principal = new ClaimsPrincipal(identity);
-        var ticket = new AuthenticationTicket(principal, Scheme);
+        var ticket = new AuthenticationTicket(principal, SchemeName);
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
@@ -151,6 +153,17 @@ public sealed class InMemoryCategoryRepository : ICategoryRepository
     public Task CreateAsync(Category category, CancellationToken cancellationToken)
     {
         _categories.Add(category);
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateAsync(Category category, CancellationToken cancellationToken)
+    {
+        var index = _categories.FindIndex(c => c.Id == category.Id);
+        if (index >= 0)
+        {
+            _categories[index] = category;
+        }
+
         return Task.CompletedTask;
     }
 
