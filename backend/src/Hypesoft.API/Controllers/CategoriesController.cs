@@ -43,4 +43,20 @@ public sealed class CategoriesController : ControllerBase
         await _mediator.Send(new DeleteCategoryCommand(id), cancellationToken);
         return NoContent();
     }
+
+    [HttpPut("{id}")]
+    [Authorize(Policy = "RequireManager")]
+    public async Task<ActionResult<CategoryDto>> Update(
+        string id,
+        [FromBody] UpdateCategoryCommand command,
+        CancellationToken cancellationToken)
+    {
+        if (id != command.Id)
+        {
+            return BadRequest("O id da rota não corresponde ao corpo.");
+        }
+
+        var result = await _mediator.Send(command, cancellationToken);
+        return Ok(result);
+    }
 }
