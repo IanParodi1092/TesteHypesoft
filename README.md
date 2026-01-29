@@ -26,7 +26,7 @@ docker-compose up -d --build
 - Frontend: http://localhost:3000
 - API: http://localhost:5000
 - OpenAPI JSON: http://localhost:5000/openapi/v1.json
-- Docs (Scalar): http://localhost:5000/scalar
+- Docs (Scalar): http://localhost:5000/scalar (apenas em desenvolvimento)
 - Keycloak: http://localhost:8080
 
 ### Credenciais (Keycloak)
@@ -74,16 +74,16 @@ O Aplicativo Hypesoft oferece uma experiência completa para gestão de produtos
 ## Stack Tecnológica
 
 ### Frontend
-- **React 19** com TypeScript
-- **Vite** ou **Next.js 14** (App Router)
-- **TailwindCSS** + **Shadcn/ui** para estilização
+- **React 18** com TypeScript
+- **Vite** para build
+- **TailwindCSS** para estilização
 - **React Query/TanStack Query** para gerenciamento de estado
 - **React Hook Form** + **Zod** para validação
-- **Recharts** ou **Chart.js** para dashboards
+- **Recharts** para dashboards
 - **React Testing Library** + **Vitest** para testes
 
 ### Backend
-- **.NET 10** com C#
+- **.NET 9** com C#
 - **Clean Architecture** + **DDD** (Domain-Driven Design)
 - **CQRS** + **MediatR** pattern
 - **Entity Framework Core** com MongoDB provider
