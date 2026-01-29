@@ -2,27 +2,31 @@ using Hypesoft.Domain.Entities;
 using Hypesoft.Domain.Repositories;
 using Hypesoft.Domain.ValueObjects;
 using Hypesoft.Infrastructure.Data;
-using MongoDB.Driver;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hypesoft.Infrastructure.Repositories;
 
 public sealed class ProductRepository : IProductRepository
 {
-    private readonly IMongoCollection<Product> _products;
+    private readonly HypesoftDbContext _context;
 
-    public ProductRepository(MongoContext context)
+    public ProductRepository(HypesoftDbContext context)
     {
-        _products = context.Products;
+        _context = context;
     }
 
     public async Task<Product?> GetByIdAsync(string id, CancellationToken cancellationToken)
     {
-        return await _products.Find(p => p.Id == id).FirstOrDefaultAsync(cancellationToken);
+        return await _context.Products
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken cancellationToken)
     {
-        return await _products.Find(FilterDefinition<Product>.Empty).ToListAsync(cancellationToken);
+        return await _context.Products
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<PagedResult<Product>> GetPagedAsync(
@@ -32,24 +36,24 @@ public sealed class ProductRepository : IProductRepository
         int pageSize,
         CancellationToken cancellationToken)
     {
-        var filter = Builders<Product>.Filter.Empty;
+        var query = _context.Products.AsNoTracking().AsQueryable();
 
         if (!string.IsNullOrWhiteSpace(search))
         {
-            filter &= Builders<Product>.Filter.Regex(p => p.Name, new MongoDB.Bson.BsonRegularExpression(search, "i"));
+            query = query.Where(product => product.Name.Contains(search));
         }
 
         if (!string.IsNullOrWhiteSpace(categoryId))
         {
-            filter &= Builders<Product>.Filter.Eq(p => p.CategoryId, categoryId);
+            query = query.Where(product => product.CategoryId == categoryId);
         }
 
-        var totalCount = await _products.CountDocumentsAsync(filter, cancellationToken: cancellationToken);
+        var totalCount = await query.LongCountAsync(cancellationToken);
 
-        var items = await _products.Find(filter)
-            .SortByDescending(p => p.UpdatedAt)
+        var items = await query
+            .OrderByDescending(product => product.UpdatedAt)
             .Skip((page - 1) * pageSize)
-            .Limit(pageSize)
+            .Take(pageSize)
             .ToListAsync(cancellationToken);
 
         return new PagedResult<Product>(items, totalCount, page, pageSize);
@@ -57,39 +61,49 @@ public sealed class ProductRepository : IProductRepository
 
     public async Task<IReadOnlyList<Product>> GetLowStockAsync(int threshold, CancellationToken cancellationToken)
     {
-        var filter = Builders<Product>.Filter.Lt(p => p.Quantity, threshold);
-        return await _products.Find(filter)
-            .SortBy(p => p.Quantity)
-            .Limit(50)
+        return await _context.Products
+            .AsNoTracking()
+            .Where(product => product.Quantity < threshold)
+            .OrderBy(product => product.Quantity)
+            .Take(50)
             .ToListAsync(cancellationToken);
     }
 
     public async Task CreateAsync(Product product, CancellationToken cancellationToken)
     {
-        await _products.InsertOneAsync(product, cancellationToken: cancellationToken);
+        _context.Products.Add(product);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task UpdateAsync(Product product, CancellationToken cancellationToken)
     {
-        await _products.ReplaceOneAsync(p => p.Id == product.Id, product, cancellationToken: cancellationToken);
+        _context.Products.Update(product);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(string id, CancellationToken cancellationToken)
     {
-        await _products.DeleteOneAsync(p => p.Id == id, cancellationToken);
+        var existing = await _context.Products.FindAsync(new object?[] { id }, cancellationToken);
+        if (existing is null)
+        {
+            return;
+        }
+
+        _context.Products.Remove(existing);
+        await _context.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<long> CountAsync(CancellationToken cancellationToken)
     {
-        return await _products.CountDocumentsAsync(FilterDefinition<Product>.Empty, cancellationToken: cancellationToken);
+        return await _context.Products.LongCountAsync(cancellationToken);
     }
 
     public async Task<decimal> GetTotalStockValueAsync(CancellationToken cancellationToken)
     {
-        var products = await _products.Find(FilterDefinition<Product>.Empty)
-            .Project(p => new { Value = p.Price * p.Quantity })
-            .ToListAsync(cancellationToken);
-
-        return products.Sum(x => x.Value);
+        return await _context.Products
+            .AsNoTracking()
+            .Select(product => product.Price * product.Quantity)
+            .DefaultIfEmpty(0m)
+            .SumAsync(cancellationToken);
     }
 }
