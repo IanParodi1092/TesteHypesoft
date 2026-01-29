@@ -1,6 +1,7 @@
 using AutoMapper;
 using Hypesoft.Application.DTOs;
 using Hypesoft.Application.Caching;
+using Hypesoft.Application.Exceptions;
 using Hypesoft.Domain.Repositories;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
@@ -33,7 +34,7 @@ public sealed class UpdateProductStockCommandHandler : IRequestHandler<UpdatePro
         var product = await _productRepository.GetByIdAsync(request.Id, cancellationToken);
         if (product is null)
         {
-            throw new InvalidOperationException("Produto não encontrado.");
+            throw new NotFoundException("Produto não encontrado.");
         }
 
         product.Quantity = request.Quantity;

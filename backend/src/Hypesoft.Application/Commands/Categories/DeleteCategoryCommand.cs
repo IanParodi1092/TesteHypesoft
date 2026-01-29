@@ -1,4 +1,5 @@
 using Hypesoft.Application.Caching;
+using Hypesoft.Application.Exceptions;
 using Hypesoft.Domain.Repositories;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
@@ -20,6 +21,12 @@ public sealed class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategor
 
     public async Task Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
+        var existing = await _categoryRepository.GetByIdAsync(request.Id, cancellationToken);
+        if (existing is null)
+        {
+            throw new NotFoundException("Categoria não encontrada.");
+        }
+
         await _categoryRepository.DeleteAsync(request.Id, cancellationToken);
 
         _cache.Remove(CacheKeys.CategoriesAll);

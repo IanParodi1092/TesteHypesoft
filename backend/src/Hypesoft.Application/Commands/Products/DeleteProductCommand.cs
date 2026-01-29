@@ -1,4 +1,5 @@
 using Hypesoft.Application.Caching;
+using Hypesoft.Application.Exceptions;
 using Hypesoft.Domain.Repositories;
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
@@ -20,6 +21,12 @@ public sealed class DeleteProductCommandHandler : IRequestHandler<DeleteProductC
 
     public async Task Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
+        var existing = await _productRepository.GetByIdAsync(request.Id, cancellationToken);
+        if (existing is null)
+        {
+            throw new NotFoundException("Produto não encontrado.");
+        }
+
         await _productRepository.DeleteAsync(request.Id, cancellationToken);
 
         _cache.Remove(CacheKeys.Dashboard);

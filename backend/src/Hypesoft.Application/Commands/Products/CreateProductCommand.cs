@@ -1,6 +1,7 @@
 using AutoMapper;
 using Hypesoft.Application.DTOs;
 using Hypesoft.Application.Caching;
+using Hypesoft.Application.Exceptions;
 using Hypesoft.Domain.Entities;
 using Hypesoft.Domain.Repositories;
 using MediatR;
@@ -40,7 +41,7 @@ public sealed class CreateProductCommandHandler : IRequestHandler<CreateProductC
         var category = await _categoryRepository.GetByIdAsync(request.CategoryId, cancellationToken);
         if (category is null)
         {
-            throw new InvalidOperationException("Categoria não encontrada.");
+            throw new NotFoundException("Categoria não encontrada.");
         }
 
         var product = new Product

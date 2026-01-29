@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using FluentValidation;
 using Hypesoft.Application;
+using Hypesoft.Application.Exceptions;
 using Hypesoft.Infrastructure;
 using Hypesoft.API.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -129,6 +130,18 @@ app.UseExceptionHandler(errorApp =>
                 title = "Falha de validação",
                 status = StatusCodes.Status400BadRequest,
                 errors
+            });
+            return;
+        }
+
+        if (exception is NotFoundException notFoundException)
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            await context.Response.WriteAsJsonAsync(new
+            {
+                title = "Recurso não encontrado",
+                status = StatusCodes.Status404NotFound,
+                detail = notFoundException.Message
             });
             return;
         }

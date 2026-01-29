@@ -25,6 +25,22 @@ public sealed class ProductsApiTests : IClassFixture<TestApplicationFactory>
         payload!.Items.Should().NotBeEmpty();
     }
 
+    [Fact]
+    public async Task Update_product_returns_not_found_when_missing()
+    {
+        var response = await _client.PutAsJsonAsync("/api/products/missing", new
+        {
+            id = "missing",
+            name = "Produto",
+            description = "Descricao",
+            price = 10,
+            categoryId = "cat-1",
+            quantity = 1
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
     private sealed class PagedResultResponse
     {
         public List<ProductResponse> Items { get; set; } = new();
