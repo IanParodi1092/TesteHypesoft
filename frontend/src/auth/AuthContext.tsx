@@ -2,11 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import Keycloak from 'keycloak-js'
 import type { KeycloakInstance } from 'keycloak-js'
 
-const keycloak = new Keycloak({
-  url: import.meta.env.VITE_KEYCLOAK_URL,
-  realm: import.meta.env.VITE_KEYCLOAK_REALM,
-  clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
-})
+// Keycloak instance is created inside the provider to keep module exports
+// limited to React components/hooks for fast refresh compatibility.
 
 type AuthContextValue = {
   keycloak: KeycloakInstance
@@ -28,6 +25,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false)
   const [error, setError] = useState<string | undefined>()
   const hasInitialized = useRef(false)
+  const keycloak = useMemo(
+    () =>
+      new Keycloak({
+        url: import.meta.env.VITE_KEYCLOAK_URL,
+        realm: import.meta.env.VITE_KEYCLOAK_REALM,
+        clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
+      }),
+    []
+  )
 
   useEffect(() => {
     if (hasInitialized.current) {
@@ -37,8 +43,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     hasInitialized.current = true
 
     if (!import.meta.env.VITE_KEYCLOAK_URL || !import.meta.env.VITE_KEYCLOAK_REALM || !import.meta.env.VITE_KEYCLOAK_CLIENT_ID) {
-      setError('Configuração do Keycloak ausente. Verifique as variáveis VITE_KEYCLOAK_*')
-      setIsReady(true)
+      // Avoid synchronous setState inside effect: schedule async update.
+      setTimeout(() => {
+        setError('Configuração do Keycloak ausente. Verifique as variáveis VITE_KEYCLOAK_*')
+        setIsReady(true)
+      }, 0)
       return
     }
 
