@@ -95,13 +95,21 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Admin", "Manager"));
 });
 
+var corsOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? Array.Empty<string>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("default", policy =>
     {
-        policy.AllowAnyOrigin();
-        policy.AllowAnyHeader();
-        policy.AllowAnyMethod();
+        if (corsOrigins.Length > 0)
+        {
+            policy.WithOrigins(corsOrigins);
+            policy.AllowAnyHeader();
+            policy.AllowAnyMethod();
+        }
+        else
+        {
+            policy.SetIsOriginAllowed(_ => false);
+        }
     });
 });
 
@@ -193,12 +201,12 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-app.MapHealthChecks("/health");
+app.MapControllers().RequireRateLimiting("fixed");
+app.MapHealthChecks("/health").RequireRateLimiting("fixed");
+app.MapOpenApi("/openapi/v1.json").RequireRateLimiting("fixed");
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi("/openapi/v1.json");
-    app.MapScalarApiReference();
+    app.MapScalarApiReference().RequireRateLimiting("fixed");
 }
 
 app.Run();
