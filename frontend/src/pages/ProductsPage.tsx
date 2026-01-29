@@ -32,6 +32,8 @@ export function ProductsPage() {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [categoryId, setCategoryId] = useState('')
+  const [page, setPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
   const { data: categories, isError: categoriesError } = useQuery({
@@ -45,13 +47,13 @@ export function ProductsPage() {
     isLoading,
     isError: productsError,
   } = useQuery({
-    queryKey: ['products', search, categoryId],
+    queryKey: ['products', search, categoryId, page, pageSize],
     queryFn: () =>
       listProducts({
         search: search || undefined,
         categoryId: categoryId || undefined,
-        page: 1,
-        pageSize: 20,
+        page,
+        pageSize,
       }),
     enabled: isAuthenticated,
   })
@@ -149,6 +151,10 @@ export function ProductsPage() {
     })
   }
 
+  const totalPages = productsData
+    ? Math.max(1, Math.ceil(productsData.totalCount / productsData.pageSize))
+    : 1
+
   return (
     <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -160,13 +166,19 @@ export function ProductsPage() {
           <div className="flex flex-1 flex-col gap-3 md:flex-row md:justify-end">
             <input
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => {
+                setSearch(event.target.value)
+                setPage(1)
+              }}
               placeholder="Buscar produto"
               className="w-full rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 md:max-w-[220px]"
             />
             <select
               value={categoryId}
-              onChange={(event) => setCategoryId(event.target.value)}
+              onChange={(event) => {
+                setCategoryId(event.target.value)
+                setPage(1)
+              }}
               className="w-full rounded-full border border-slate-200 bg-white px-4 py-2 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-400 md:max-w-[200px]"
             >
               <option value="">Todas as categorias</option>
@@ -262,6 +274,47 @@ export function ProductsPage() {
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="mt-4 flex flex-col items-center justify-between gap-3 text-sm text-slate-500 md:flex-row">
+          <div className="flex items-center gap-2">
+            <span>Itens por página</span>
+            <select
+              value={pageSize}
+              onChange={(event) => {
+                setPageSize(Number(event.target.value))
+                setPage(1)
+              }}
+              className="rounded-full border border-slate-200 bg-white px-3 py-1 text-sm text-slate-600"
+            >
+              {[10, 20, 30, 50].map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              disabled={page <= 1}
+              className="rounded-full border border-slate-200 px-4 py-1 text-sm text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Anterior
+            </button>
+            <span>
+              Página {productsData?.page ?? page} de {totalPages}
+            </span>
+            <button
+              type="button"
+              onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+              disabled={page >= totalPages}
+              className="rounded-full border border-slate-200 px-4 py-1 text-sm text-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Próxima
+            </button>
+          </div>
         </div>
       </section>
 
