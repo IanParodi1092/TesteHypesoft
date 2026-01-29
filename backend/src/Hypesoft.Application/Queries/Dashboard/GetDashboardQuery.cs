@@ -65,7 +65,13 @@ public sealed class GetDashboardQueryHandler : IRequestHandler<GetDashboardQuery
             TotalProducts = products.LongCount(),
             TotalStockValue = products.Sum(p => p.Price * p.Quantity),
             LowStockProducts = lowStock,
-            ProductsByCategory = byCategory
+            ProductsByCategory = byCategory,
+            Products = products.Select(p =>
+            {
+                var dto = _mapper.Map<ProductDto>(p);
+                dto.CategoryName = categoryLookup.TryGetValue(p.CategoryId, out var name) ? name : null;
+                return dto;
+            }).ToList()
         };
 
         _cache.Set(CacheKeys.Dashboard, result, TimeSpan.FromMinutes(1));

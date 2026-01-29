@@ -31,9 +31,13 @@ export function DashboardPage() {
       return data.productsByCategory
     }
 
-    return data.productsByCategory.filter(
-      (item) => item.categoryName === selectedCategory
-    )
+    // quando uma categoria é selecionada, mostrar produtos daquela categoria e suas quantidades
+    return data.products
+      .filter((p) => p.categoryName === selectedCategory)
+      .map((p) => ({
+        name: p.name,
+        quantity: p.quantity,
+      }))
   }, [data, selectedCategory])
 
   if (isError) {
@@ -91,7 +95,7 @@ export function DashboardPage() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ left: 0, right: 16 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="categoryName" stroke="#94a3b8" fontSize={12} />
+                <XAxis dataKey={selectedCategory ? 'name' : 'categoryName'} stroke="#94a3b8" fontSize={12} />
                 <YAxis stroke="#94a3b8" fontSize={12} allowDecimals={false} />
                 <Tooltip
                   contentStyle={{
@@ -100,7 +104,7 @@ export function DashboardPage() {
                     color: '#0f172a',
                   }}
                 />
-                <Bar dataKey="count" fill="#6366f1" radius={[10, 10, 0, 0]} />
+                <Bar dataKey={selectedCategory ? 'quantity' : 'count'} fill="#6366f1" radius={[10, 10, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

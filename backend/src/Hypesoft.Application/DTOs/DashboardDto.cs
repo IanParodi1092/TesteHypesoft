@@ -6,6 +6,7 @@ public sealed class DashboardDto
     public decimal TotalStockValue { get; set; }
     public IReadOnlyList<ProductDto> LowStockProducts { get; set; } = Array.Empty<ProductDto>();
     public IReadOnlyList<CategoryCountDto> ProductsByCategory { get; set; } = Array.Empty<CategoryCountDto>();
+    public IReadOnlyList<ProductDto> Products { get; set; } = Array.Empty<ProductDto>();
 }
 
 public sealed class CategoryCountDto

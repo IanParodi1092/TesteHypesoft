@@ -26,6 +26,7 @@ export type Dashboard = {
   totalStockValue: number
   lowStockProducts: Product[]
   productsByCategory: CategoryCount[]
+  products: Product[]
 }
 
 export type PagedResult<T> = {
