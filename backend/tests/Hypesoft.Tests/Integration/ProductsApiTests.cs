@@ -59,7 +59,7 @@ public sealed class ProductsApiTests : IClassFixture<ApiFixture>
             ["client_secret"] = "hypesoft-api-secret",
             ["grant_type"] = "password",
             ["username"] = "admin",
-            ["password"] = "Admin123!"
+            ["password"] = "admin"
         });
 
         var response = await http.PostAsync($"{baseUrl}/realms/hypesoft/protocol/openid-connect/token", content);
