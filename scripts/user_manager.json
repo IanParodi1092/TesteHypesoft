@@ -1,0 +1,23 @@
+﻿{
+    "id":  "b2564ab0-f18c-4662-b631-c70656e89591",
+    "username":  "manager",
+    "firstName":  "Manager",
+    "lastName":  "User",
+    "emailVerified":  true,
+    "enabled":  true,
+    "totp":  false,
+    "disableableCredentialTypes":  [
+
+                                   ],
+    "requiredActions":  [
+
+                        ],
+    "notBefore":  0,
+    "access":  {
+                   "manageGroupMembership":  true,
+                   "view":  true,
+                   "mapRoles":  true,
+                   "impersonate":  true,
+                   "manage":  true
+               }
+}

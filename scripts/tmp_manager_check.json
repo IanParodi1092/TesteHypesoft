@@ -1,0 +1,24 @@
+﻿{
+    "id":  "25f74eda-89cb-443c-b903-47dcdcce7827",
+    "username":  "manager",
+    "firstName":  "Manager",
+    "lastName":  "User",
+    "emailVerified":  true,
+    "createdTimestamp":  1769738023819,
+    "enabled":  true,
+    "totp":  false,
+    "disableableCredentialTypes":  [
+
+                                   ],
+    "requiredActions":  [
+
+                        ],
+    "notBefore":  0,
+    "access":  {
+                   "manageGroupMembership":  true,
+                   "view":  true,
+                   "mapRoles":  true,
+                   "impersonate":  true,
+                   "manage":  true
+               }
+}

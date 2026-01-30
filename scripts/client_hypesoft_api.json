@@ -1,0 +1,99 @@
+﻿{
+    "id":  "0782a15f-9efe-4069-8465-8b424d0341a4",
+    "clientId":  "hypesoft-api",
+    "name":  "Hypesoft API",
+    "surrogateAuthRequired":  false,
+    "enabled":  true,
+    "alwaysDisplayInConsole":  false,
+    "clientAuthenticatorType":  "client-secret",
+    "secret":  "hypesoft-api-secret",
+    "redirectUris":  [
+
+                     ],
+    "webOrigins":  [
+
+                   ],
+    "notBefore":  0,
+    "bearerOnly":  false,
+    "consentRequired":  false,
+    "standardFlowEnabled":  false,
+    "implicitFlowEnabled":  false,
+    "directAccessGrantsEnabled":  true,
+    "serviceAccountsEnabled":  true,
+    "publicClient":  false,
+    "frontchannelLogout":  false,
+    "protocol":  "openid-connect",
+    "attributes":  {
+                       "post.logout.redirect.uris":  "+"
+                   },
+    "authenticationFlowBindingOverrides":  {
+
+                                           },
+    "fullScopeAllowed":  true,
+    "nodeReRegistrationTimeout":  -1,
+    "protocolMappers":  [
+                            {
+                                "id":  "555d2e63-ec17-47a6-9ce4-d521a167a76e",
+                                "name":  "Client Host",
+                                "protocol":  "openid-connect",
+                                "protocolMapper":  "oidc-usersessionmodel-note-mapper",
+                                "consentRequired":  false,
+                                "config":  {
+                                               "user.session.note":  "clientHost",
+                                               "introspection.token.claim":  "true",
+                                               "id.token.claim":  "true",
+                                               "access.token.claim":  "true",
+                                               "claim.name":  "clientHost",
+                                               "jsonType.label":  "String"
+                                           }
+                            },
+                            {
+                                "id":  "3c92e392-dba0-4129-be43-380882740426",
+                                "name":  "Client ID",
+                                "protocol":  "openid-connect",
+                                "protocolMapper":  "oidc-usersessionmodel-note-mapper",
+                                "consentRequired":  false,
+                                "config":  {
+                                               "user.session.note":  "client_id",
+                                               "introspection.token.claim":  "true",
+                                               "id.token.claim":  "true",
+                                               "access.token.claim":  "true",
+                                               "claim.name":  "client_id",
+                                               "jsonType.label":  "String"
+                                           }
+                            },
+                            {
+                                "id":  "f051e052-80f9-4274-a6a1-a60518feb554",
+                                "name":  "Client IP Address",
+                                "protocol":  "openid-connect",
+                                "protocolMapper":  "oidc-usersessionmodel-note-mapper",
+                                "consentRequired":  false,
+                                "config":  {
+                                               "user.session.note":  "clientAddress",
+                                               "introspection.token.claim":  "true",
+                                               "id.token.claim":  "true",
+                                               "access.token.claim":  "true",
+                                               "claim.name":  "clientAddress",
+                                               "jsonType.label":  "String"
+                                           }
+                            }
+                        ],
+    "defaultClientScopes":  [
+                                "web-origins",
+                                "acr",
+                                "profile",
+                                "roles",
+                                "email"
+                            ],
+    "optionalClientScopes":  [
+                                 "address",
+                                 "phone",
+                                 "offline_access",
+                                 "microprofile-jwt"
+                             ],
+    "access":  {
+                   "view":  true,
+                   "configure":  true,
+                   "manage":  true
+               }
+}

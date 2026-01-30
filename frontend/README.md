@@ -71,3 +71,11 @@ export default defineConfig([
   },
 ])
 ```
+
+## URLs de Acesso
+
+- Frontend: http://localhost:3000
+- API: http://localhost:5000
+- Swagger: http://localhost:5000/swagger
+- MongoDB Express: http://localhost:8081
+- Keycloak: http://localhost:8080

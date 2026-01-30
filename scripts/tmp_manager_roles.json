@@ -1,0 +1,13 @@
+﻿{
+    "value":  [
+                  {
+                      "id":  "60901f01-8a87-4d23-ae05-12b3abde268b",
+                      "name":  "default-roles-hypesoft",
+                      "description":  "${role_default-roles}",
+                      "composite":  true,
+                      "clientRole":  false,
+                      "containerId":  "bfa867ee-8a4c-4da4-9577-1983c9487ae5"
+                  }
+              ],
+    "Count":  1
+}

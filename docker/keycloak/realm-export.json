@@ -1,6 +1,7 @@
 {
   "realm": "hypesoft",
   "enabled": true,
+  "directGrantFlow": "direct grant",
   "roles": {
     "realm": [
       { "name": "Admin" },
@@ -28,6 +29,27 @@
       "serviceAccountsEnabled": true,
       "standardFlowEnabled": false,
       "directAccessGrantsEnabled": true
+    }
+  ],
+  "authenticationFlows": [
+    {
+      "alias": "direct grant",
+      "description": "Direct grant flow without conditional OTP",
+      "providerId": "basic-flow",
+      "topLevel": true,
+      "builtIn": false,
+      "authenticationExecutions": [
+        {
+          "authenticator": "direct-grant-validate-username",
+          "requirement": "REQUIRED",
+          "priority": 10
+        },
+        {
+          "authenticator": "direct-grant-validate-password",
+          "requirement": "REQUIRED",
+          "priority": 20
+        }
+      ]
     }
   ],
   "users": [

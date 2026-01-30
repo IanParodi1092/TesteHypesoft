@@ -103,6 +103,10 @@ export function DashboardPage() {
                     border: '1px solid #e2e8f0',
                     color: '#0f172a',
                   }}
+                  formatter={(value, name) => [
+                    value,
+                    name === 'count' ? 'Contagem' : name === 'quantity' ? 'Quantidade' : name,
+                  ]}
                 />
                 <Bar dataKey={selectedCategory ? 'quantity' : 'count'} fill="#6366f1" radius={[10, 10, 0, 0]} />
               </BarChart>

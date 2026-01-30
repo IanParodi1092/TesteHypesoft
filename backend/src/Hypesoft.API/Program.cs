@@ -25,6 +25,7 @@ builder.Host.UseSerilog((context, logger) =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<SeedOptions>(builder.Configuration.GetSection("Seed"));
 builder.Services.AddHostedService<SeedDataHostedService>();
@@ -200,6 +201,27 @@ app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Redirect /swagger -> /swagger/ (permanent) to ensure clients reach index.html
+app.Use(async (context, next) =>
+{
+    if (string.Equals(context.Request.Path.Value, "/swagger", StringComparison.OrdinalIgnoreCase))
+    {
+        var target = "/swagger/" + (context.Request.QueryString.HasValue ? context.Request.QueryString.Value : string.Empty);
+        context.Response.StatusCode = StatusCodes.Status301MovedPermanently;
+        context.Response.Headers["Location"] = target;
+        return;
+    }
+    await next();
+});
+
+// Swagger UI at /swagger (serves the OpenAPI spec mapped at /openapi/v1.json)
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/openapi/v1.json", "Hypesoft API v1");
+    options.RoutePrefix = "swagger"; // serve at /swagger
+});
 
 app.MapControllers().RequireRateLimiting("fixed");
 app.MapHealthChecks("/health").RequireRateLimiting("fixed");

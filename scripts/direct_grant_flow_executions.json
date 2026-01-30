@@ -1,0 +1,28 @@
+﻿[
+    {
+        "id":  "e4435ad5-a22b-469b-ada9-810bd49c7a3a",
+        "requirement":  "REQUIRED",
+        "displayName":  "Username Validation",
+        "requirementChoices":  [
+                                   "REQUIRED"
+                               ],
+        "configurable":  false,
+        "providerId":  "direct-grant-validate-username",
+        "level":  0,
+        "index":  0
+    },
+    {
+        "id":  "c5194ca2-81b5-4f37-a2f0-2567150f7cab",
+        "requirement":  "REQUIRED",
+        "displayName":  "Password",
+        "requirementChoices":  [
+                                   "REQUIRED",
+                                   "ALTERNATIVE",
+                                   "DISABLED"
+                               ],
+        "configurable":  false,
+        "providerId":  "direct-grant-validate-password",
+        "level":  0,
+        "index":  1
+    }
+]

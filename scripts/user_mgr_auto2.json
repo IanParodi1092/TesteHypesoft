@@ -1,0 +1,24 @@
+﻿{
+    "id":  "3f763fa8-783e-4eda-a700-06b2461b3488",
+    "username":  "mgr_auto2",
+    "firstName":  "Mgr",
+    "lastName":  "Auto2",
+    "emailVerified":  true,
+    "createdTimestamp":  1769742805564,
+    "enabled":  true,
+    "totp":  false,
+    "disableableCredentialTypes":  [
+
+                                   ],
+    "requiredActions":  [
+
+                        ],
+    "notBefore":  0,
+    "access":  {
+                   "manageGroupMembership":  true,
+                   "view":  true,
+                   "mapRoles":  true,
+                   "impersonate":  true,
+                   "manage":  true
+               }
+}

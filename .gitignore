@@ -15,3 +15,5 @@ Thumbs.db
 # Env
 .env
 .env.local
+# Internal diagnostics log (untracked)
+INTERNAL_DIAGNOSTIC_LOG.txt
